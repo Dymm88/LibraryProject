@@ -1,6 +1,7 @@
 services:
   db:
     image: postgres:latest
+    restart: always
     environment:
       POSTGRES_DB: library
       POSTGRES_USER: user

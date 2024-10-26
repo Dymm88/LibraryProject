@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from data import db_handler
@@ -8,7 +8,7 @@ from service import book as crud
 router = APIRouter(prefix="/books", tags=["Books"])
 
 
-@router.post("/", response_model=BookBase)
+@router.post("/", response_model=BookBase, status_code=status.HTTP_201_CREATED)
 async def create_book(book: BookCreate, db: AsyncSession = Depends(db_handler.get_db)):
     return await crud.create_book(book=book, db=db)
 
@@ -22,21 +22,23 @@ async def get_books(db: AsyncSession = Depends(db_handler.get_db)):
 @router.get("/{book_id}", response_model=BookBase)
 async def get_book(book_id: int, db: AsyncSession = Depends(db_handler.get_db)):
     book = await crud.get_book(db=db, book_id=book_id)
-    return book
+    if book:
+        return book
+    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
 
 
-@router.put("/{book_id}", response_model=BookBase)
+@router.put("/{book_id}", response_model=BookBase, status_code=status.HTTP_202_ACCEPTED)
 async def update_book(book_id: int, book: BookCreate, db: AsyncSession = Depends(db_handler.get_db)):
     mod_book = await crud.update_book(db=db, book_id=book_id, book_data=book)
     return mod_book
 
 
-@router.patch("/{book_id}", response_model=BookBase)
+@router.patch("/{book_id}", response_model=BookBase, status_code=status.HTTP_202_ACCEPTED)
 async def partial_update_book(book_id: int, book: BookCreate, db: AsyncSession = Depends(db_handler.get_db)):
     mod_book = await crud.partial_update_book(db=db, book_id=book_id, book_data=book)
     return mod_book
 
 
-@router.delete("/{author_id}")
+@router.delete("/{author_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def remove_book(book_id: int, db: AsyncSession = Depends(db_handler.get_db)) -> None:
     await crud.remove_book(book_id=book_id, db=db)

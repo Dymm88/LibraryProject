@@ -11,9 +11,10 @@ class Settings(BaseSettings):
 
 class WorkerDB:
     def __init__(self, url: str, echo: bool):
-        self.engine = create_async_engine(url=url,
-                                          echo=echo,
-                                          )
+        self.engine = create_async_engine(
+            url=url,
+            echo=echo,
+        )
         self.session = async_sessionmaker(
             bind=self.engine,
             autoflush=False,
@@ -31,7 +32,6 @@ class WorkerDB:
     async def get_db(self):
         async with self.session() as session:
             yield session
-            await session.close()
 
 
 settings = Settings()
