@@ -2,8 +2,8 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
+import models
 from data import db_handler
-from models import models
 from web.author import router as author_router
 from web.book import router as book_router
 from web.tag import router as tag_router
