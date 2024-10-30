@@ -1,4 +1,4 @@
-from sqlalchemy import Integer, ForeignKey, String, Table, Column
+from sqlalchemy import Integer, ForeignKey, String
 from sqlalchemy.orm import DeclarativeBase, declared_attr, Mapped, mapped_column, relationship
 
 
@@ -12,39 +12,46 @@ class Base(DeclarativeBase):
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
 
 
-author_tags = Table(
-    'author_tags',
-    Base.metadata,
-    Column('author_id', Integer, ForeignKey('authors.id')),
-    Column('tag_id', Integer, ForeignKey('tags.id'))
-)
+class AuthorTag(Base):
+    __tablename__ = 'author_tags'
+    
+    author_id: Mapped[int] = mapped_column(Integer, ForeignKey('authors.id'), primary_key=True)
+    tag_id: Mapped[int] = mapped_column(Integer, ForeignKey('tags.id'), primary_key=True)
+    
+    author: Mapped["Author"] = relationship("Author", back_populates="author_tags")
+    tag: Mapped["Tag"] = relationship("Tag", back_populates="author_tags")
 
-book_tags = Table(
-    'book_tags',
-    Base.metadata,
-    Column('book_id', Integer, ForeignKey('books.id')),
-    Column('tag_id', Integer, ForeignKey('tags.id'))
-)
+
+class BookTag(Base):
+    __tablename__ = 'book_tags'
+    
+    book_id: Mapped[int] = mapped_column(Integer, ForeignKey('books.id'), primary_key=True)
+    tag_id: Mapped[int] = mapped_column(Integer, ForeignKey('tags.id'), primary_key=True)
+    
+    book: Mapped["Book"] = relationship("Book", back_populates="book_tags")
+    tag: Mapped["Tag"] = relationship("Tag", back_populates="book_tags")
 
 
 class Author(Base):
     name: Mapped[str] = mapped_column(String, nullable=False)
     country: Mapped[str] = mapped_column(String, nullable=False)
-    books = relationship("Book", back_populates="author")
-    tags = relationship("Tag", secondary=author_tags, back_populates="authors")
+    
+    books: Mapped[list["Book"]] = relationship("Book", back_populates="author")
+    author_tags: Mapped[list[AuthorTag]] = relationship("AuthorTag", back_populates="author")
 
 
 class Book(Base):
     title: Mapped[str] = mapped_column(String, nullable=False)
     created_at: Mapped[int] = mapped_column(Integer, nullable=False)
     genre: Mapped[str] = mapped_column(String, nullable=False)
+    
     author_id: Mapped[int] = mapped_column(Integer, ForeignKey('authors.id'))
-    author = relationship("Author", back_populates="books")
-    tags = relationship("Tag", secondary=book_tags, back_populates="books")
+    author: Mapped["Author"] = relationship("Author", back_populates="books")
+    book_tags: Mapped[list[BookTag]] = relationship("BookTag", back_populates="book")
 
 
 class Tag(Base):
     name: Mapped[str] = mapped_column(String, nullable=False)
     
-    books = relationship("Book", secondary=book_tags, back_populates="tags")
-    authors = relationship("Author", secondary=author_tags, back_populates="tags")
+    author_tags: Mapped[list[AuthorTag]] = relationship("AuthorTag", back_populates="tag")
+    book_tags: Mapped[list[BookTag]] = relationship("BookTag", back_populates="tag")

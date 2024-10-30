@@ -23,15 +23,15 @@ class WorkerDB:
         )
     
     def get_session(self):
-        session = async_scoped_session(
+        return async_scoped_session(
             session_factory=self.session,
             scopefunc=current_task,
         )
-        return session
     
     async def get_db(self):
         async with self.session() as session:
             yield session
+            await session.close()
 
 
 settings = Settings()
