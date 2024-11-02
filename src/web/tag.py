@@ -9,7 +9,9 @@ router = APIRouter(prefix="/tags", tags=["Tags"])
 
 
 @router.post("/", response_model=TagBase, status_code=status.HTTP_201_CREATED)
-async def create_tag(tag: TagCreate, session: AsyncSession = Depends(db_handler.get_db)):
+async def create_tag(
+    tag: TagCreate, session: AsyncSession = Depends(db_handler.get_db)
+):
     return await TagCRUD(session=session).create(tag=tag)
 
 
@@ -28,17 +30,23 @@ async def get_tag(tag_id: int, session: AsyncSession = Depends(db_handler.get_db
 
 
 @router.put("/{tag_id}", response_model=TagBase, status_code=status.HTTP_202_ACCEPTED)
-async def update_tag(tag_id: int, tag: TagCreate, session: AsyncSession = Depends(db_handler.get_db)):
+async def update_tag(
+    tag_id: int, tag: TagCreate, session: AsyncSession = Depends(db_handler.get_db)
+):
     mod_tag = await TagCRUD(session=session).update(tag_id=tag_id, tag_data=tag)
     return mod_tag
 
 
 @router.patch("/{tag_id}", response_model=TagBase, status_code=status.HTTP_202_ACCEPTED)
-async def partial_update_tag(tag_id: int, tag: TagCreate, session: AsyncSession = Depends(db_handler.get_db)):
+async def partial_update_tag(
+    tag_id: int, tag: TagCreate, session: AsyncSession = Depends(db_handler.get_db)
+):
     mod_tag = await TagCRUD(session=session).partial_update(tag_id=tag_id, tag_data=tag)
     return mod_tag
 
 
 @router.delete("/{tag_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def remove_tag(tag_id: int, session: AsyncSession = Depends(db_handler.get_db)) -> None:
+async def remove_tag(
+    tag_id: int, session: AsyncSession = Depends(db_handler.get_db)
+) -> None:
     await TagCRUD(session=session).remove(tag_id=tag_id)

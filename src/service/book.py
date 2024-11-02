@@ -3,6 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from models import Book
 from schemas import BookCreate
 
+
 class BookCRUD:
     def __init__(self, session: AsyncSession):
         self.session = session
