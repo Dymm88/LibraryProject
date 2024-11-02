@@ -1,10 +1,10 @@
 from pydantic import BaseModel, ConfigDict
 
 
-class AuthorBase(BaseModel):
+class AuthorBaseSchema(BaseModel):
     name: str
     country: str
 
 
-class AuthorCreate(AuthorBase):
+class AuthorCreateSchema(AuthorBaseSchema):
     model_config = ConfigDict(from_attributes=True)

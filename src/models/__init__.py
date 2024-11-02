@@ -1,10 +1,10 @@
 __all__ = (
-    "Author",
-    "Book",
-    "Tag",
+    "AuthorModel",
+    "BookModel",
+    "TagModel",
     "BookTag",
     "AuthorTag",
     "Base",
 )
 
-from .models import Author, Book, Tag, BookTag, AuthorTag, Base
+from .models import AuthorModel, BookModel, TagModel, BookTag, AuthorTag, Base

@@ -28,8 +28,10 @@ class AuthorTag(Base):
         Integer, ForeignKey("tags.id"), primary_key=True
     )
 
-    author: Mapped["Author"] = relationship("Author", back_populates="author_tags")
-    tag: Mapped["Tag"] = relationship("Tag", back_populates="author_tags")
+    author: Mapped["AuthorModel"] = relationship(
+        "AuthorModel", back_populates="author_tags"
+    )
+    tag: Mapped["TagModel"] = relationship("TagModel", back_populates="author_tags")
 
 
 class BookTag(Base):
@@ -42,31 +44,33 @@ class BookTag(Base):
         Integer, ForeignKey("tags.id"), primary_key=True
     )
 
-    book: Mapped["Book"] = relationship("Book", back_populates="book_tags")
-    tag: Mapped["Tag"] = relationship("Tag", back_populates="book_tags")
+    book: Mapped["BookModel"] = relationship("BookModel", back_populates="book_tags")
+    tag: Mapped["TagModel"] = relationship("TagModel", back_populates="book_tags")
 
 
-class Author(Base):
+class AuthorModel(Base):
     name: Mapped[str] = mapped_column(String, nullable=False)
     country: Mapped[str] = mapped_column(String, nullable=False)
 
-    books: Mapped[list["Book"]] = relationship("Book", back_populates="author")
+    books: Mapped[list["BookModel"]] = relationship(
+        "BookModel", back_populates="author"
+    )
     author_tags: Mapped[list[AuthorTag]] = relationship(
         "AuthorTag", back_populates="author"
     )
 
 
-class Book(Base):
+class BookModel(Base):
     title: Mapped[str] = mapped_column(String, nullable=False)
     created_at: Mapped[int] = mapped_column(Integer, nullable=False)
     genre: Mapped[str] = mapped_column(String, nullable=False)
 
     author_id: Mapped[int] = mapped_column(Integer, ForeignKey("authors.id"))
-    author: Mapped["Author"] = relationship("Author", back_populates="books")
+    author: Mapped["AuthorModel"] = relationship("AuthorModel", back_populates="books")
     book_tags: Mapped[list[BookTag]] = relationship("BookTag", back_populates="book")
 
 
-class Tag(Base):
+class TagModel(Base):
     name: Mapped[str] = mapped_column(String, nullable=False)
 
     author_tags: Mapped[list[AuthorTag]] = relationship(

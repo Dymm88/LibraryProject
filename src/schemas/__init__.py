@@ -1,12 +1,12 @@
 __all__ = (
-    "AuthorBase",
-    "AuthorCreate",
-    "BookBase",
-    "BookCreate",
-    "TagBase",
-    "TagCreate",
+    "AuthorBaseSchema",
+    "AuthorCreateSchema",
+    "BookBaseSchema",
+    "BookCreateSchema",
+    "TagBaseSchema",
+    "TagCreateSchema",
 )
 
-from .author import AuthorBase, AuthorCreate
-from .book import BookBase, BookCreate
-from .tag import TagBase, TagCreate
+from .author import AuthorBaseSchema, AuthorCreateSchema
+from .book import BookBaseSchema, BookCreateSchema
+from .tag import TagBaseSchema, TagCreateSchema

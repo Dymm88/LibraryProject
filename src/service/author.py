@@ -1,32 +1,36 @@
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from models import Author
-from schemas import AuthorCreate
+from models import AuthorModel
+from schemas import AuthorCreateSchema
 
 
 class AuthorCRUD:
     def __init__(self, session: AsyncSession):
         self.session = session
 
-    async def create(self, author: AuthorCreate) -> Author:
-        new_author = Author(**author.model_dump())
+    async def create(self, author: AuthorCreateSchema) -> AuthorModel:
+        new_author = AuthorModel(**author.model_dump())
         self.session.add(new_author)
         await self.session.commit()
         await self.session.refresh(new_author)
         return new_author
 
-    async def get_all(self) -> list[Author]:
-        result = await self.session.execute(select(Author).order_by(Author.id))
+    async def get_all(self) -> list[AuthorModel]:
+        result = await self.session.execute(
+            select(AuthorModel).order_by(AuthorModel.id)
+        )
         return result.scalars().all()
 
-    async def get_one(self, author_id: int) -> Author | None:
+    async def get_one(self, author_id: int) -> AuthorModel | None:
         result = await self.session.execute(
-            select(Author).where(Author.id == author_id)
+            select(AuthorModel).where(AuthorModel.id == author_id)
         )
         return result.scalar_one_or_none()
 
-    async def update(self, author_id: int, author_data: AuthorCreate) -> Author:
+    async def update(
+        self, author_id: int, author_data: AuthorCreateSchema
+    ) -> AuthorModel:
         author = await self.get_one(author_id)
         if author:
             for k, v in author_data.model_dump().items():
@@ -36,7 +40,9 @@ class AuthorCRUD:
             await self.session.refresh(author)
         return author
 
-    async def partial_update(self, author_id: int, author_data: AuthorCreate) -> Author:
+    async def partial_update(
+        self, author_id: int, author_data: AuthorCreateSchema
+    ) -> AuthorModel:
         author = await self.get_one(author_id)
         if author:
             for k, v in author_data.model_dump(exclude_unset=True).items():

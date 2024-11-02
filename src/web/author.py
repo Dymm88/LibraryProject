@@ -2,29 +2,29 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from data import db_handler
-from schemas import AuthorCreate, AuthorBase
+from schemas import AuthorCreateSchema, AuthorBaseSchema
 from service import AuthorCRUD
 
 router = APIRouter(prefix="/authors", tags=["Authors"])
 
 
-@router.post("/", response_model=AuthorBase, status_code=status.HTTP_201_CREATED)
+@router.post("/", response_model=AuthorBaseSchema, status_code=status.HTTP_201_CREATED)
 async def create_author(
-    new_author: AuthorCreate, session: AsyncSession = Depends(db_handler.get_db)
+    new_author: AuthorCreateSchema, session: AsyncSession = Depends(db_handler.get_db)
 ):
     return await AuthorCRUD(session).create(author=new_author)
 
 
-@router.get("/", response_model=list[AuthorBase])
+@router.get("/", response_model=list[AuthorBaseSchema])
 async def get_authors(session: AsyncSession = Depends(db_handler.get_db)):
     result = await AuthorCRUD(session).get_all()
     return [
-        AuthorBase(name=author_data.name, country=author_data.country)
+        AuthorBaseSchema(name=author_data.name, country=author_data.country)
         for author_data in result
     ]
 
 
-@router.get("/{author_id}", response_model=AuthorBase)
+@router.get("/{author_id}", response_model=AuthorBaseSchema)
 async def get_author(
     author_id: int, session: AsyncSession = Depends(db_handler.get_db)
 ):
@@ -35,11 +35,13 @@ async def get_author(
 
 
 @router.put(
-    "/{author_id}", response_model=AuthorBase, status_code=status.HTTP_202_ACCEPTED
+    "/{author_id}",
+    response_model=AuthorBaseSchema,
+    status_code=status.HTTP_202_ACCEPTED,
 )
 async def update_author(
     author_id: int,
-    replace_author: AuthorCreate,
+    replace_author: AuthorCreateSchema,
     session: AsyncSession = Depends(db_handler.get_db),
 ):
     mod_author = await AuthorCRUD(session).update(
@@ -49,11 +51,13 @@ async def update_author(
 
 
 @router.patch(
-    "/{author_id}", response_model=AuthorBase, status_code=status.HTTP_202_ACCEPTED
+    "/{author_id}",
+    response_model=AuthorBaseSchema,
+    status_code=status.HTTP_202_ACCEPTED,
 )
 async def partial_update_author(
     author_id: int,
-    replace_author: AuthorCreate,
+    replace_author: AuthorCreateSchema,
     session: AsyncSession = Depends(db_handler.get_db),
 ):
     mod_author = await AuthorCRUD(session).partial_update(

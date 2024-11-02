@@ -1,9 +1,9 @@
 from pydantic import BaseModel, ConfigDict
 
 
-class TagBase(BaseModel):
+class TagBaseSchema(BaseModel):
     name: str
 
 
-class TagCreate(TagBase):
+class TagCreateSchema(TagBaseSchema):
     model_config = ConfigDict(from_attributes=True)
