@@ -10,18 +10,18 @@ router = APIRouter(prefix="/tags", tags=["Tags"])
 
 @router.post("/", response_model=TagBase, status_code=status.HTTP_201_CREATED)
 async def create_tag(tag: TagCreate, session: AsyncSession = Depends(db_handler.get_db)):
-    return await TagCRUD(session=session).create_tag(tag=tag)
+    return await TagCRUD(session=session).create(tag=tag)
 
 
 @router.get("/", response_model=list[TagBase])
 async def get_tags(session: AsyncSession = Depends(db_handler.get_db)):
-    result = await TagCRUD(session=session).get_tags()
+    result = await TagCRUD(session=session).get_all()
     return [TagBase(name=tag_data.name) for tag_data in result]
 
 
 @router.get("/{tag_id}", response_model=TagBase)
 async def get_tag(tag_id: int, session: AsyncSession = Depends(db_handler.get_db)):
-    tag = await TagCRUD(session=session).get_tag(tag_id=tag_id)
+    tag = await TagCRUD(session=session).get_one(tag_id=tag_id)
     if tag:
         return tag
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
@@ -29,16 +29,16 @@ async def get_tag(tag_id: int, session: AsyncSession = Depends(db_handler.get_db
 
 @router.put("/{tag_id}", response_model=TagBase, status_code=status.HTTP_202_ACCEPTED)
 async def update_tag(tag_id: int, tag: TagCreate, session: AsyncSession = Depends(db_handler.get_db)):
-    mod_tag = await TagCRUD(session=session).update_tag(tag_id=tag_id, tag_data=tag)
+    mod_tag = await TagCRUD(session=session).update(tag_id=tag_id, tag_data=tag)
     return mod_tag
 
 
 @router.patch("/{tag_id}", response_model=TagBase, status_code=status.HTTP_202_ACCEPTED)
 async def partial_update_tag(tag_id: int, tag: TagCreate, session: AsyncSession = Depends(db_handler.get_db)):
-    mod_tag = await TagCRUD(session=session).partial_update_tag(tag_id=tag_id, tag_data=tag)
+    mod_tag = await TagCRUD(session=session).partial_update(tag_id=tag_id, tag_data=tag)
     return mod_tag
 
 
 @router.delete("/{tag_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def remove_tag(tag_id: int, session: AsyncSession = Depends(db_handler.get_db)) -> None:
-    await TagCRUD(session=session).remove_tag(tag_id=tag_id)
+    await TagCRUD(session=session).remove(tag_id=tag_id)

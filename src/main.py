@@ -4,9 +4,7 @@ from fastapi import FastAPI
 
 from data import db_handler
 from models import Base
-from web.author import router as author_router
-from web.book import router as book_router
-from web.tag import router as tag_router
+from web import author, book, tag
 
 
 @asynccontextmanager
@@ -18,6 +16,6 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title="Library", lifespan=lifespan)
 
-app.include_router(author_router)
-app.include_router(book_router)
-app.include_router(tag_router)
+app.include_router(author.router)
+app.include_router(book.router)
+app.include_router(tag.router)
